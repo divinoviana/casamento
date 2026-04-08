@@ -1,0 +1,51 @@
+{
+  "entities": {
+    "RSVP": {
+      "title": "RSVP",
+      "description": "Confirmação de presença de um convidado",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Nome do convidado"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "E-mail do convidado (opcional)"
+        },
+        "whatsapp": {
+          "type": "string",
+          "description": "WhatsApp do convidado (opcional)"
+        },
+        "adults": {
+          "type": "number",
+          "description": "Quantidade de adultos"
+        },
+        "children": {
+          "type": "number",
+          "description": "Quantidade de crianças"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["confirmado", "recusado"],
+          "description": "Status da confirmação"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Data de criação"
+        }
+      },
+      "required": ["name", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/rsvps/{rsvpId}": {
+      "schema": {
+        "$ref": "#/entities/RSVP"
+      },
+      "description": "Coleção de confirmações de presença"
+    }
+  }
+}

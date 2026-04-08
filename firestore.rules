@@ -1,0 +1,85 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: rsvps
+    // Document ID: auto-generated
+    // Fields:
+    //   - name: string (required, max 100 chars) - Nome do convidado
+    //   - email: string (optional, max 100 chars) - E-mail do convidado
+    //   - whatsapp: string (optional, max 20 chars) - WhatsApp do convidado
+    //   - adults: number (optional, >= 0) - Quantidade de adultos
+    //   - children: number (optional, >= 0) - Quantidade de crianças
+    //   - status: string (required, 'confirmado' or 'recusado') - Status da confirmação
+    //   - createdAt: timestamp (required) - Data de criação
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidOptionalString(field, minLen, maxLen) {
+      return !(field in request.resource.data) ||
+             (request.resource.data[field] is string &&
+              request.resource.data[field].size() >= minLen &&
+              request.resource.data[field].size() <= maxLen);
+    }
+
+    function isValidOptionalNumber(field, minVal, maxVal) {
+      return !(field in request.resource.data) ||
+             (request.resource.data[field] is number &&
+              request.resource.data[field] >= minVal &&
+              request.resource.data[field] <= maxVal);
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidRSVP() {
+      let data = request.resource.data;
+      return hasOnlyAllowedFields(['name', 'email', 'whatsapp', 'adults', 'children', 'status', 'createdAt']) &&
+             hasRequiredFields(['name', 'status', 'createdAt']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+             isValidOptionalString('email', 5, 100) &&
+             (!('email' in data) || isValidEmail(data.email)) &&
+             isValidOptionalString('whatsapp', 8, 20) &&
+             isValidOptionalNumber('adults', 0, 20) &&
+             isValidOptionalNumber('children', 0, 20) &&
+             data.status in ['confirmado', 'recusado'] &&
+             data.createdAt is timestamp;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /rsvps/{rsvpId} {
+      // Allow unauthenticated creates so guests can RSVP without logging in.
+      // Strict validation ensures only valid RSVP data is written.
+      // Reads, updates, and deletes are completely denied to protect PII.
+      allow create: if isValidRSVP();
+      allow read, update, delete: if false;
+    }
+  }
+}
