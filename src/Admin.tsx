@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { collection, query, onSnapshot, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged, User } from 'firebase/auth';
 import { db, auth } from './firebase';
-import { Trash2, Edit2, LogOut, Download, CheckCircle2, XCircle } from 'lucide-react';
+import { Trash2, Edit2, LogOut, Download, CheckCircle2, XCircle, QrCode, X } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { Html5QrcodeScanner } from 'html5-qrcode';
 
 type RSVP = {
   id: string;
@@ -27,6 +28,34 @@ export default function Admin() {
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showScanner, setShowScanner] = useState(false);
+  const [scanResult, setScanResult] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (showScanner) {
+      const scanner = new Html5QrcodeScanner(
+        "reader",
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        /* verbose= */ false
+      );
+
+      scanner.render(onScanSuccess, onScanFailure);
+
+      function onScanSuccess(decodedText: string) {
+        setScanResult(decodedText);
+        scanner.clear();
+        // setShowScanner(false); // Keep it open or close it? Let's close it after success
+      }
+
+      function onScanFailure(error: any) {
+        // console.warn(`Code scan error = ${error}`);
+      }
+
+      return () => {
+        scanner.clear().catch(error => console.error("Failed to clear scanner", error));
+      };
+    }
+  }, [showScanner]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -221,6 +250,13 @@ export default function Admin() {
           </div>
           <div className="flex gap-4">
             <button 
+              onClick={() => setShowScanner(true)}
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+            >
+              <QrCode size={18} />
+              Escanear Convite
+            </button>
+            <button 
               onClick={exportPDF}
               className="flex items-center gap-2 bg-wedding-gold hover:bg-wedding-gold/90 text-white px-4 py-2 rounded-lg transition-colors"
             >
@@ -240,6 +276,38 @@ export default function Admin() {
         {fetchError && (
           <div className="mb-8 p-4 bg-red-50 border border-red-100 text-red-600 rounded-xl text-center">
             <p className="font-medium">{fetchError}</p>
+          </div>
+        )}
+
+        {showScanner && (
+          <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl p-6 max-w-lg w-full relative">
+              <button 
+                onClick={() => setShowScanner(false)}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+              >
+                <X size={24} />
+              </button>
+              <h2 className="font-serif text-2xl mb-4 text-center">Escanear QR Code</h2>
+              <div id="reader" className="overflow-hidden rounded-xl bg-gray-100"></div>
+              
+              {scanResult && (
+                <div className="mt-6 p-4 bg-wedding-bg rounded-xl border border-wedding-gold/30 animate-in fade-in slide-in-from-top-2">
+                  <h3 className="font-bold text-wedding-gold-dark mb-2">Resultado do Scan:</h3>
+                  <p className="text-gray-800 font-medium whitespace-pre-wrap">{scanResult}</p>
+                  <button 
+                    onClick={() => setScanResult(null)}
+                    className="mt-4 w-full py-2 bg-gray-200 hover:bg-gray-300 rounded-lg text-sm font-medium transition-colors"
+                  >
+                    Escanear Outro
+                  </button>
+                </div>
+              )}
+              
+              <p className="text-xs text-gray-400 mt-4 text-center">
+                Aponte a câmera para o QR Code do convidado.
+              </p>
+            </div>
           </div>
         )}
 
