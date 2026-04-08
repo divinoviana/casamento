@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { QRCodeSVG } from 'qrcode.react';
-import { MapPin, Gift, CalendarHeart, Clock, CheckCircle2, Send, Heart } from 'lucide-react';
+import { MapPin, Gift, CalendarHeart, Clock, CheckCircle2, Send, Heart, Copy, Check, Wallet } from 'lucide-react';
 import { db } from './firebase';
 
 type RSVPFormData = {
@@ -19,6 +19,16 @@ export default function App() {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [digitalInvite, setDigitalInvite] = useState<RSVPFormData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const pixKey = "63984813916";
+  const pixName = "Mardila Chayanne Rocha Lopes Santana Soares";
+
+  const copyPix = () => {
+    navigator.clipboard.writeText(pixKey);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm<RSVPFormData>({
     defaultValues: {
@@ -142,6 +152,34 @@ export default function App() {
           >
             Acessar Lista na Havan
           </a>
+
+          <div className="mt-12 pt-12 border-t border-gray-100">
+            <div className="w-12 h-12 mx-auto rounded-full bg-green-50 flex items-center justify-center text-green-600 mb-4">
+              <Wallet size={24} />
+            </div>
+            <h3 className="font-serif text-2xl mb-2">Presente em Dinheiro</h3>
+            <p className="text-wedding-muted mb-6">
+              Se preferir nos presentear com qualquer quantia para nossa Lua de Mel, você pode usar o PIX abaixo:
+            </p>
+            
+            <div className="max-w-sm mx-auto bg-gray-50 p-6 rounded-2xl border border-gray-100">
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Chave PIX (Celular)</p>
+              <div className="flex items-center justify-between bg-white p-3 rounded-xl border border-gray-200 mb-4">
+                <span className="font-mono font-medium text-wedding-text">{pixKey}</span>
+                <button 
+                  onClick={copyPix}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-wedding-gold"
+                  title="Copiar Chave"
+                >
+                  {copied ? <Check size={20} /> : <Copy size={20} />}
+                </button>
+              </div>
+              <p className="text-sm text-wedding-muted italic">
+                Favorecida: <br/>
+                <span className="font-medium text-wedding-text not-italic">{pixName}</span>
+              </p>
+            </div>
+          </div>
         </section>
 
         {/* RSVP Section */}
