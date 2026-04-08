@@ -28,7 +28,7 @@ service cloud.firestore {
 
     function isAdmin() {
       return isAuthenticated() && 
-        (request.auth.token.email == "divinoviana@gmail.com" || request.auth.token.email == "chayrochawld@gmail.com");
+        (request.auth.token.email.lower() == "divinoviana@gmail.com" || request.auth.token.email.lower() == "chayrochawld@gmail.com");
     }
 
     function hasOnlyAllowedFields(fields) {

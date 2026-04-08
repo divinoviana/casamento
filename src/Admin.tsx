@@ -60,7 +60,7 @@ export default function Admin() {
     }, (error) => {
       console.error("Error fetching RSVPs:", error);
       if (error.message.includes('permission-denied') || error.code === 'permission-denied') {
-        setFetchError("Você não tem permissão para ver os dados. Verifique se fez login com o e-mail correto dos noivos.");
+        setFetchError(`Você não tem permissão para ver os dados. Logado como: ${user.email}. Verifique se este é o e-mail correto dos noivos.`);
       } else {
         setFetchError("Erro ao carregar os dados: " + error.message);
       }
@@ -214,7 +214,10 @@ export default function Admin() {
         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
           <div>
             <h1 className="font-serif text-3xl text-wedding-dark">Painel de Controle</h1>
-            <p className="text-gray-600">Gerencie as confirmações de presença do seu casamento.</p>
+            <p className="text-gray-600">
+              Gerencie as confirmações de presença do seu casamento.<br/>
+              <span className="text-sm text-wedding-gold">Logado como: <strong>{user.email}</strong></span>
+            </p>
           </div>
           <div className="flex gap-4">
             <button 
