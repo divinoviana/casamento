@@ -76,7 +76,25 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-wedding-bg font-sans text-wedding-text selection:bg-wedding-gold selection:text-white pb-20">
+    <div className="min-h-screen bg-wedding-bg font-sans text-wedding-text selection:bg-wedding-gold selection:text-white pb-20 relative overflow-x-hidden">
+      {/* Floral Decorations */}
+      <div className="absolute top-0 left-0 w-64 h-64 md:w-96 md:h-96 pointer-events-none z-50 opacity-70 -translate-x-20 -translate-y-20 animate-in fade-in zoom-in duration-1000">
+        <img 
+          src="https://images.unsplash.com/photo-1523438885200-e635ba2c371e?q=80&w=800&auto=format&fit=crop" 
+          alt="" 
+          className="w-full h-full object-cover rounded-br-full border-b-8 border-r-8 border-white/50 shadow-2xl rotate-12"
+          referrerPolicy="no-referrer"
+        />
+      </div>
+      <div className="absolute top-0 right-0 w-64 h-64 md:w-96 md:h-96 pointer-events-none z-50 opacity-70 translate-x-20 -translate-y-20 animate-in fade-in zoom-in duration-1000">
+        <img 
+          src="https://images.unsplash.com/photo-1523438885200-e635ba2c371e?q=80&w=800&auto=format&fit=crop" 
+          alt="" 
+          className="w-full h-full object-cover rounded-bl-full border-b-8 border-l-8 border-white/50 shadow-2xl -rotate-12"
+          referrerPolicy="no-referrer"
+        />
+      </div>
+
       {/* Hero Section */}
       <header className="relative py-24 px-6 text-center overflow-hidden flex flex-col items-center justify-center min-h-[60vh]">
         <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'url("https://picsum.photos/seed/wedding-flowers/1920/1080?blur=2")', backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
