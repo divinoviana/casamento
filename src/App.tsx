@@ -71,7 +71,7 @@ export default function App() {
   };
 
   const getWhatsAppLink = (data: RSVPFormData) => {
-    const text = `Olá! Confirmo minha presença no casamento de Márdila e Wanderson.\nNome: ${data.name}\nAdultos: ${data.adults || 0}\nCrianças: ${data.children || 0}`;
+    const text = `Olá! Confirmo minha presença no casamento de Márdila Chayanne e Wanderson Maciel.\nNome: ${data.name}\nAdultos: ${data.adults || 0}\nCrianças: ${data.children || 0}`;
     return `https://wa.me/?text=${encodeURIComponent(text)}`;
   };
 
@@ -107,7 +107,7 @@ export default function App() {
           </div>
           <p className="text-wedding-gold font-medium tracking-widest uppercase text-sm mb-6">Você está convidado para o casamento de</p>
           <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl text-wedding-text mb-6">
-            Márdila <span className="text-wedding-gold font-light italic">&amp;</span> Wanderson
+            Márdila Chayanne <span className="text-wedding-gold font-light italic">&amp;</span> Wanderson Maciel
           </h1>
           <div className="flex items-center justify-center gap-4 text-wedding-muted mt-8">
             <div className="h-px w-12 bg-wedding-gold/50"></div>
@@ -357,7 +357,7 @@ export default function App() {
 
       <footer className="mt-32 pb-8 text-center text-wedding-muted text-sm flex flex-col items-center justify-center gap-2">
         <Heart size={20} className="text-wedding-gold/50" />
-        <p>Com amor, Márdila & Wanderson</p>
+        <p>Com amor, Márdila Chayanne & Wanderson Maciel</p>
         <a href="/admin" className="text-xs text-gray-300 hover:text-wedding-gold mt-4 transition-colors">Acesso Restrito</a>
       </footer>
     </div>
