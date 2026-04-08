@@ -21,7 +21,7 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const pixKey = "63984813916";
+  const pixKey = "63992328624";
   const pixName = "Mardila Chayanne Rocha Lopes Santana Soares";
 
   const copyPix = () => {
