@@ -106,9 +106,9 @@ export default function App() {
             <p className="text-wedding-gold font-medium text-xs mt-2 tracking-widest uppercase">Coríntios 2:9</p>
           </div>
           <p className="text-wedding-gold font-medium tracking-widest uppercase text-sm mb-6">Você está convidado para o casamento de</p>
-          <h1 className="font-serif italic text-5xl md:text-7xl lg:text-8xl text-wedding-text mb-6 flex flex-col items-center gap-2">
+          <h1 className="font-serif italic text-4xl md:text-6xl lg:text-7xl text-wedding-text mb-6 flex flex-col items-center gap-2">
             <span>Márdila Chayanne</span>
-            <span className="text-wedding-gold font-light not-italic text-4xl md:text-6xl">&amp;</span>
+            <span className="text-wedding-gold font-light not-italic text-3xl md:text-5xl">&amp;</span>
             <span>Wanderson Maciel</span>
           </h1>
           <div className="flex items-center justify-center gap-4 text-wedding-muted mt-8">
