@@ -23,6 +23,8 @@ export default function Admin() {
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editData, setEditData] = useState<Partial<RSVP>>({});
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -35,17 +37,30 @@ export default function Admin() {
   useEffect(() => {
     if (!user) return;
 
-    const q = query(collection(db, 'rsvps'), orderBy('createdAt', 'desc'));
+    // Removido o orderBy('createdAt', 'desc') porque se houver documentos antigos sem esse campo,
+    // o Firestore os oculta automaticamente da lista. Vamos ordenar no frontend.
+    const q = query(collection(db, 'rsvps'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       })) as RSVP[];
+      
+      // Ordenação no frontend (mais recentes primeiro)
+      data.sort((a, b) => {
+        const timeA = a.createdAt?.toMillis?.() || 0;
+        const timeB = b.createdAt?.toMillis?.() || 0;
+        return timeB - timeA;
+      });
+
       setRsvps(data);
+      setFetchError(null);
     }, (error) => {
       console.error("Error fetching RSVPs:", error);
-      if (error.message.includes('permission-denied')) {
-        alert("Você não tem permissão para acessar esta página. Apenas o administrador pode ver os dados.");
+      if (error.message.includes('permission-denied') || error.code === 'permission-denied') {
+        setFetchError("Você não tem permissão para ver os dados. Verifique se fez login com o e-mail correto (divinoviana@gmail.com).");
+      } else {
+        setFetchError("Erro ao carregar os dados: " + error.message);
       }
     });
 
@@ -53,10 +68,18 @@ export default function Admin() {
   }, [user]);
 
   const handleLogin = async () => {
+    setLoginError(null);
     try {
       await signInWithPopup(auth, googleProvider);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Login error:", error);
+      if (error.code === 'auth/unauthorized-domain') {
+        setLoginError("Erro: O domínio do Vercel não está autorizado no Firebase. Veja as instruções para corrigir.");
+      } else if (error.code === 'auth/popup-closed-by-user') {
+        setLoginError("O login foi cancelado.");
+      } else {
+        setLoginError("Erro ao fazer login. Tente novamente.");
+      }
     }
   };
 
@@ -144,6 +167,18 @@ export default function Admin() {
         <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center">
           <h1 className="font-serif text-3xl text-wedding-dark mb-6">Acesso dos Noivos</h1>
           <p className="text-gray-600 mb-8">Faça login com sua conta Google autorizada para gerenciar a lista de convidados.</p>
+          
+          {loginError && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 rounded-xl text-sm text-left">
+              <p className="font-medium mb-1">{loginError}</p>
+              {loginError.includes('autorizado') && (
+                <p className="text-xs mt-2">
+                  Para corrigir: Acesse o Firebase Console &gt; Authentication &gt; Settings (Configurações) &gt; Authorized domains (Domínios autorizados) e adicione o link do seu site Vercel.
+                </p>
+              )}
+            </div>
+          )}
+
           <button 
             onClick={handleLogin}
             className="w-full bg-wedding-gold hover:bg-wedding-gold/90 text-white font-medium py-3 px-4 rounded-lg transition-colors"
@@ -180,6 +215,12 @@ export default function Admin() {
             </button>
           </div>
         </div>
+
+        {fetchError && (
+          <div className="mb-8 p-4 bg-red-50 border border-red-100 text-red-600 rounded-xl text-center">
+            <p className="font-medium">{fetchError}</p>
+          </div>
+        )}
 
         <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
           <div className="overflow-x-auto">
