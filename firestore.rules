@@ -75,9 +75,6 @@ service cloud.firestore {
     // ===============================================================
 
     match /rsvps/{rsvpId} {
-      // Allow unauthenticated creates so guests can RSVP without logging in.
-      // Strict validation ensures only valid RSVP data is written.
-      // Reads, updates, and deletes are completely denied to protect PII.
       allow create: if isValidRSVP();
       allow read, update, delete: if false;
     }

@@ -52,9 +52,9 @@ export default function App() {
       if (data.status === 'confirmado') {
         setDigitalInvite(data);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error submitting RSVP:', err);
-      setError('Ocorreu um erro ao enviar sua confirmação. Por favor, tente novamente.');
+      setError(`Erro: ${err.message || 'Desconhecido'}. Por favor, tente novamente.`);
     } finally {
       setIsSubmitting(false);
     }
