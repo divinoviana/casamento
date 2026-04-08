@@ -99,6 +99,12 @@ export default function App() {
       <header className="relative py-24 px-6 text-center overflow-hidden flex flex-col items-center justify-center min-h-[60vh]">
         <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'url("https://picsum.photos/seed/wedding-flowers/1920/1080?blur=2")', backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
         <div className="relative z-10 max-w-3xl mx-auto">
+          <div className="mb-12 animate-in fade-in slide-in-from-top-4 duration-1000">
+            <p className="font-serif text-lg md:text-xl italic text-wedding-gold-dark leading-relaxed max-w-lg mx-auto">
+              "Nem os olhos viram, nem os ouvidos ouviram o que Deus preparou para nós. Um futuro certo, cheio de esperança e paz"
+            </p>
+            <p className="text-wedding-gold font-medium text-xs mt-2 tracking-widest uppercase">Coríntios 2:9</p>
+          </div>
           <p className="text-wedding-gold font-medium tracking-widest uppercase text-sm mb-6">Você está convidado para o casamento de</p>
           <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl text-wedding-text mb-6">
             Márdila <span className="text-wedding-gold font-light italic">&amp;</span> Wanderson
