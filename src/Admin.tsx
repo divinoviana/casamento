@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { collection, query, onSnapshot, doc, deleteDoc, updateDoc, orderBy } from 'firebase/firestore';
-import { signInWithPopup, signOut, onAuthStateChanged, User } from 'firebase/auth';
-import { db, auth, googleProvider } from './firebase';
+import { collection, query, onSnapshot, doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { signInWithEmailAndPassword, signOut, onAuthStateChanged, User } from 'firebase/auth';
+import { db, auth } from './firebase';
 import { Trash2, Edit2, LogOut, Download, CheckCircle2, XCircle } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -25,6 +25,8 @@ export default function Admin() {
   const [editData, setEditData] = useState<Partial<RSVP>>({});
   const [loginError, setLoginError] = useState<string | null>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -67,18 +69,17 @@ export default function Admin() {
     return () => unsubscribe();
   }, [user]);
 
-  const handleLogin = async () => {
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
     setLoginError(null);
     try {
-      await signInWithPopup(auth, googleProvider);
+      await signInWithEmailAndPassword(auth, email, password);
     } catch (error: any) {
       console.error("Login error:", error);
-      if (error.code === 'auth/unauthorized-domain') {
-        setLoginError("Erro: O domínio do Vercel não está autorizado no Firebase. Veja as instruções para corrigir.");
-      } else if (error.code === 'auth/popup-closed-by-user') {
-        setLoginError("O login foi cancelado.");
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+        setLoginError("E-mail ou senha incorretos.");
       } else {
-        setLoginError("Erro ao fazer login. Tente novamente.");
+        setLoginError("Erro ao fazer login: " + error.message);
       }
     }
   };
@@ -166,25 +167,42 @@ export default function Admin() {
       <div className="min-h-screen bg-wedding-bg flex items-center justify-center p-4">
         <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center">
           <h1 className="font-serif text-3xl text-wedding-dark mb-6">Acesso dos Noivos</h1>
-          <p className="text-gray-600 mb-8">Faça login com sua conta Google autorizada para gerenciar a lista de convidados.</p>
+          <p className="text-gray-600 mb-8">Faça login para gerenciar a lista de convidados.</p>
           
           {loginError && (
             <div className="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 rounded-xl text-sm text-left">
               <p className="font-medium mb-1">{loginError}</p>
-              {loginError.includes('autorizado') && (
-                <p className="text-xs mt-2">
-                  Para corrigir: Acesse o Firebase Console &gt; Authentication &gt; Settings (Configurações) &gt; Authorized domains (Domínios autorizados) e adicione o link do seu site Vercel.
-                </p>
-              )}
             </div>
           )}
 
-          <button 
-            onClick={handleLogin}
-            className="w-full bg-wedding-gold hover:bg-wedding-gold/90 text-white font-medium py-3 px-4 rounded-lg transition-colors"
-          >
-            Entrar com Google
-          </button>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <input 
+                type="email" 
+                placeholder="E-mail"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-wedding-gold focus:ring-2 focus:ring-wedding-gold/20 outline-none transition-all text-left"
+              />
+            </div>
+            <div>
+              <input 
+                type="password" 
+                placeholder="Senha"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-wedding-gold focus:ring-2 focus:ring-wedding-gold/20 outline-none transition-all text-left"
+              />
+            </div>
+            <button 
+              type="submit"
+              className="w-full bg-wedding-gold hover:bg-wedding-gold/90 text-white font-medium py-3 px-4 rounded-lg transition-colors mt-2"
+            >
+              Entrar
+            </button>
+          </form>
         </div>
       </div>
     );
