@@ -60,7 +60,7 @@ export default function Admin() {
     }, (error) => {
       console.error("Error fetching RSVPs:", error);
       if (error.message.includes('permission-denied') || error.code === 'permission-denied') {
-        setFetchError("Você não tem permissão para ver os dados. Verifique se fez login com o e-mail correto (divinoviana@gmail.com).");
+        setFetchError("Você não tem permissão para ver os dados. Verifique se fez login com o e-mail correto dos noivos.");
       } else {
         setFetchError("Erro ao carregar os dados: " + error.message);
       }
