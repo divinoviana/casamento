@@ -296,6 +296,7 @@ export default function App() {
       <footer className="mt-32 pb-8 text-center text-wedding-muted text-sm flex flex-col items-center justify-center gap-2">
         <Heart size={20} className="text-wedding-gold/50" />
         <p>Com amor, Márdila & Wanderson</p>
+        <a href="/admin" className="text-xs text-gray-300 hover:text-wedding-gold mt-4 transition-colors">Acesso Restrito</a>
       </footer>
     </div>
   );
