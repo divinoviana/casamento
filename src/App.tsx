@@ -34,15 +34,17 @@ export default function App() {
     setIsSubmitting(true);
     setError(null);
     try {
-      // Clean up optional fields if they are empty strings
-      const cleanedData = {
-        ...data,
-        email: data.email || undefined,
-        whatsapp: data.whatsapp || undefined,
+      // Clean up optional fields by omitting them if empty
+      const cleanedData: any = {
+        name: data.name,
+        status: data.status,
         adults: data.adults ? Number(data.adults) : 0,
         children: data.children ? Number(data.children) : 0,
         createdAt: serverTimestamp()
       };
+
+      if (data.email) cleanedData.email = data.email;
+      if (data.whatsapp) cleanedData.whatsapp = data.whatsapp;
 
       await addDoc(collection(db, 'rsvps'), cleanedData);
       
