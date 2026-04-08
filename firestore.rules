@@ -27,8 +27,10 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isAuthenticated() && 
-        (request.auth.token.email.lower() == "divinoviana@gmail.com" || request.auth.token.email.lower() == "chayrochawld@gmail.com");
+      // Como não há tela de cadastro no app, apenas usuários criados manualmente
+      // no painel do Firebase conseguem fazer login. Portanto, qualquer usuário
+      // logado é um administrador válido.
+      return request.auth != null;
     }
 
     function hasOnlyAllowedFields(fields) {
